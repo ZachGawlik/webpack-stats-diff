@@ -20,15 +20,15 @@ test('reports stat diffs between old and new assets', () => {
     { name: 'commons.js', size: 32768 },
     { name: 'logo.svg', size: 588 },
     { name: 'me.jpg', size: 1200000 },
-    { name: 'other-page.js', size: 40000 },
-    { name: 'main-site.js', size: 68000 }
+    { name: 'main-site.js', size: 68000 },
+    { name: 'other-page.js', size: 40000 }
   ];
   const newAssets = [
     { name: 'commons.js', size: 65536 },
     { name: 'Roboto-Regular.ttf', size: 176999 },
     { name: 'me.jpg', size: 1200000 },
-    { name: 'other-page.js', size: 12345 },
-    { name: 'main-site.js', size: 38000 }
+    { name: 'main-site.js', size: 38000 },
+    { name: 'other-page.js', size: 12345 }
   ];
   expect(webpackStatsDiff(oldAssets, newAssets)).toEqual({
     added: [
@@ -50,16 +50,16 @@ test('reports stat diffs between old and new assets', () => {
     ],
     smaller: [
       {
-        name: 'other-page.js',
-        newSize: 12345,
-        oldSize: 40000,
-        diff: -27655
-      },
-      {
         name: 'main-site.js',
         newSize: 38000,
         oldSize: 68000,
         diff: -30000
+      },
+      {
+        name: 'other-page.js',
+        newSize: 12345,
+        oldSize: 40000,
+        diff: -27655
       }
     ],
     sameSize: [
@@ -137,4 +137,17 @@ test('filters assets by ext config', () => {
       diff: -5232
     }
   });
+});
+
+test('Sorts by greatest size differences first', () => {
+  const newAssets = [
+    { name: 'commons.js', size: 65536 },
+    { name: 'new-page.js', size: 8000 },
+    { name: 'main-site.js', size: 38000 }
+  ];
+  expect(webpackStatsDiff([], newAssets).added).toMatchObject([
+    { name: 'commons.js' },
+    { name: 'main-site.js' },
+    { name: 'new-page.js' }
+  ]);
 });

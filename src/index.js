@@ -15,6 +15,8 @@ const indexByName = assets => {
   }, {});
 };
 
+const diffDesc = (diff1, diff2) => Math.abs(diff2.diff) - Math.abs(diff1.diff);
+
 const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
   const oldAssetsByName = indexByName(filterByExtension(oldAssets, config));
   const newAssetsByName = indexByName(filterByExtension(newAssets, config));
@@ -68,10 +70,10 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
   });
 
   return {
-    added,
-    removed,
-    bigger,
-    smaller,
+    added: added.sort(diffDesc),
+    removed: removed.sort(diffDesc),
+    bigger: bigger.sort(diffDesc),
+    smaller: smaller.sort(diffDesc),
     sameSize,
     total: {
       newSize: newSizeTotal,
