@@ -24,6 +24,12 @@
   "homepage": "https://github.com/ZachGawlik/webpack-stats-diff#readme",
   "devDependencies": {
     "eslint": "4.19.1",
+    "husky": "1.0.0-rc.2",
     "jest": "22.4.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm test"
+    }
   }
 }
