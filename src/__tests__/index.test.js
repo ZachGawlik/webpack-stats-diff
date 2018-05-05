@@ -171,3 +171,25 @@ test('Sorts by greatest size differences first', () => {
     { name: 'new-page.js' }
   ]);
 });
+
+test('Marks an asset as sameSize if changed by a minor percentage', () => {
+  const oldAssets = [
+    { name: 'big-file-small-change', size: 100000 },
+    { name: 'big-file-big-change', size: 100000 },
+    { name: 'small-file-small-change', size: 100 },
+    { name: 'small-file-big-change', size: 100 }
+  ];
+  const newAssets = [
+    { name: 'big-file-small-change', size: 104000 },
+    { name: 'big-file-big-change', size: 105000 },
+    { name: 'small-file-small-change', size: 96 },
+    { name: 'small-file-big-change', size: 95 }
+  ];
+  const results = webpackStatsDiff(oldAssets, newAssets);
+  expect(results.bigger).toMatchObject([{ name: 'big-file-big-change' }]);
+  expect(results.smaller).toMatchObject([{ name: 'small-file-big-change' }]);
+  expect(results.sameSize).toMatchObject([
+    { name: 'big-file-small-change' },
+    { name: 'small-file-small-change' }
+  ]);
+});

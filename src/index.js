@@ -1,5 +1,7 @@
 const path = require('path');
 
+const DIFF_THRESHOLD = 5;
+
 const filterByExtension = (assets, config) => {
   return config.extensions
     ? assets.filter(({ name }) =>
@@ -46,9 +48,9 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
         { name },
         createDiff(oldAsset.size, newAssetsByName[name].size)
       );
-      if (diff.diff > 0) {
+      if (diff.diffPercentage >= DIFF_THRESHOLD) {
         bigger.push(diff);
-      } else if (diff.diff < 0) {
+      } else if (diff.diff <= -1 * DIFF_THRESHOLD) {
         smaller.push(diff);
       } else {
         sameSize.push(diff);
