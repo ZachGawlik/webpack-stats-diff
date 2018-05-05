@@ -1,3 +1,13 @@
+const path = require('path');
+
+const filterByExtension = (assets, config) => {
+  return config.extensions
+    ? assets.filter(({ name }) =>
+        config.extensions.includes(path.extname(name))
+      )
+    : assets;
+};
+
 const indexByName = assets => {
   return assets.reduce((assetsByName, asset) => {
     assetsByName[asset.name] = asset;
@@ -5,9 +15,9 @@ const indexByName = assets => {
   }, {});
 };
 
-const webpackStatsDiff = (oldAssets, newAssets) => {
-  const oldAssetsByName = indexByName(oldAssets);
-  const newAssetsByName = indexByName(newAssets);
+const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
+  const oldAssetsByName = indexByName(filterByExtension(oldAssets, config));
+  const newAssetsByName = indexByName(filterByExtension(newAssets, config));
 
   const added = [];
   const removed = [];

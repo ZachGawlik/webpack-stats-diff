@@ -77,3 +77,64 @@ test('reports stat diffs between old and new assets', () => {
     }
   });
 });
+
+test('filters assets by ext config', () => {
+  const oldAssets = [
+    { name: 'commons.js', size: 32768 },
+    { name: 'main-site.js', size: 68000 },
+    { name: 'old-page.js', size: 8000 },
+    { name: 'styles.css', size: 10000 },
+    { name: 'logo.svg', size: 588 },
+    { name: 'me.jpg', size: 1200000 }
+  ];
+  const newAssets = [
+    { name: 'commons.js', size: 65536 },
+    { name: 'main-site.js', size: 38000 },
+    { name: 'styles.css', size: 10000 },
+    { name: 'me.jpg', size: 1200000 },
+    { name: 'Roboto-Regular.ttf', size: 176999 }
+  ];
+
+  expect(
+    webpackStatsDiff(oldAssets, newAssets, { extensions: ['.js', '.css'] })
+  ).toEqual({
+    added: [],
+    removed: [
+      {
+        name: 'old-page.js',
+        newSize: 0,
+        oldSize: 8000,
+        diff: -8000
+      }
+    ],
+    bigger: [
+      {
+        name: 'commons.js',
+        newSize: 65536,
+        oldSize: 32768,
+        diff: 32768
+      }
+    ],
+    smaller: [
+      {
+        name: 'main-site.js',
+        newSize: 38000,
+        oldSize: 68000,
+        diff: -30000
+      }
+    ],
+    sameSize: [
+      {
+        name: 'styles.css',
+        newSize: 10000,
+        oldSize: 10000,
+        diff: 0
+      }
+    ],
+    total: {
+      newSize: 113536,
+      oldSize: 118768,
+      diff: -5232
+    }
+  });
+});
