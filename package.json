@@ -1,0 +1,29 @@
+{
+  "name": "webpack-stats-diff",
+  "version": "0.1.0",
+  "description": "CLI tool to report changes in bundle sizes across builds",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint 'src/**'",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZachGawlik/webpack-stats-diff.git"
+  },
+  "keywords": [
+    "cli",
+    "webpack",
+    "stats"
+  ],
+  "author": "Zach Gawlik <zachgawlik@gmail.com> (https://zachgawlik.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ZachGawlik/webpack-stats-diff/issues"
+  },
+  "homepage": "https://github.com/ZachGawlik/webpack-stats-diff#readme",
+  "devDependencies": {
+    "eslint": "4.19.1",
+    "jest": "22.4.3"
+  }
+}
