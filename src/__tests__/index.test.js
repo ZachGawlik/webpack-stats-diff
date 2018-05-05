@@ -10,7 +10,8 @@ test('handles blank inputs', () => {
     total: {
       newSize: 0,
       oldSize: 0,
-      diff: 0
+      diff: 0,
+      diffPercentage: 0
     }
   });
 });
@@ -36,16 +37,26 @@ test('reports stat diffs between old and new assets', () => {
         name: 'Roboto-Regular.ttf',
         newSize: 176999,
         oldSize: 0,
-        diff: 176999
+        diff: 176999,
+        diffPercentage: Infinity
       }
     ],
-    removed: [{ name: 'logo.svg', newSize: 0, oldSize: 588, diff: -588 }],
+    removed: [
+      {
+        name: 'logo.svg',
+        newSize: 0,
+        oldSize: 588,
+        diff: -588,
+        diffPercentage: -100
+      }
+    ],
     bigger: [
       {
         name: 'commons.js',
         newSize: 65536,
         oldSize: 32768,
-        diff: 32768
+        diff: 32768,
+        diffPercentage: 100
       }
     ],
     smaller: [
@@ -53,13 +64,15 @@ test('reports stat diffs between old and new assets', () => {
         name: 'main-site.js',
         newSize: 38000,
         oldSize: 68000,
-        diff: -30000
+        diff: -30000,
+        diffPercentage: -44.12
       },
       {
         name: 'other-page.js',
         newSize: 12345,
         oldSize: 40000,
-        diff: -27655
+        diff: -27655,
+        diffPercentage: -69.14
       }
     ],
     sameSize: [
@@ -67,13 +80,15 @@ test('reports stat diffs between old and new assets', () => {
         name: 'me.jpg',
         newSize: 1200000,
         oldSize: 1200000,
-        diff: 0
+        diff: 0,
+        diffPercentage: 0
       }
     ],
     total: {
       newSize: 1492880,
       oldSize: 1341356,
-      diff: 151524
+      diff: 151524,
+      diffPercentage: 11.3
     }
   });
 });
@@ -104,7 +119,8 @@ test('filters assets by ext config', () => {
         name: 'old-page.js',
         newSize: 0,
         oldSize: 8000,
-        diff: -8000
+        diff: -8000,
+        diffPercentage: -100
       }
     ],
     bigger: [
@@ -112,7 +128,8 @@ test('filters assets by ext config', () => {
         name: 'commons.js',
         newSize: 65536,
         oldSize: 32768,
-        diff: 32768
+        diff: 32768,
+        diffPercentage: 100
       }
     ],
     smaller: [
@@ -120,7 +137,8 @@ test('filters assets by ext config', () => {
         name: 'main-site.js',
         newSize: 38000,
         oldSize: 68000,
-        diff: -30000
+        diff: -30000,
+        diffPercentage: -44.12
       }
     ],
     sameSize: [
@@ -128,13 +146,15 @@ test('filters assets by ext config', () => {
         name: 'styles.css',
         newSize: 10000,
         oldSize: 10000,
-        diff: 0
+        diff: 0,
+        diffPercentage: 0
       }
     ],
     total: {
       newSize: 113536,
       oldSize: 118768,
-      diff: -5232
+      diff: -5232,
+      diffPercentage: -4.41
     }
   });
 });

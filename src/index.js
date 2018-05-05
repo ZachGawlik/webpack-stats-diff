@@ -17,6 +17,13 @@ const indexByName = assets => {
 
 const diffDesc = (diff1, diff2) => Math.abs(diff2.diff) - Math.abs(diff1.diff);
 
+const createDiff = (oldSize, newSize) => ({
+  newSize,
+  oldSize,
+  diff: newSize - oldSize,
+  diffPercentage: +((1 - newSize / oldSize) * -100).toFixed(2) || 0
+});
+
 const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
   const oldAssetsByName = indexByName(filterByExtension(oldAssets, config));
   const newAssetsByName = indexByName(filterByExtension(newAssets, config));
@@ -33,19 +40,12 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
     const oldAsset = oldAssetsByName[name];
     oldSizeTotal += oldAsset.size;
     if (!newAssetsByName[name]) {
-      removed.push({
-        name,
-        newSize: 0,
-        oldSize: oldAsset.size,
-        diff: -1 * oldAsset.size
-      });
+      removed.push(Object.assign({ name }, createDiff(oldAsset.size, 0)));
     } else {
-      const diff = {
-        name,
-        newSize: newAssetsByName[name].size,
-        oldSize: oldAsset.size,
-        diff: newAssetsByName[name].size - oldAsset.size
-      };
+      const diff = Object.assign(
+        { name },
+        createDiff(oldAsset.size, newAssetsByName[name].size)
+      );
       if (diff.diff > 0) {
         bigger.push(diff);
       } else if (diff.diff < 0) {
@@ -60,12 +60,7 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
     const newAsset = newAssetsByName[name];
     newSizeTotal += newAsset.size;
     if (!oldAssetsByName[newAsset.name]) {
-      added.push({
-        name,
-        newSize: newAsset.size,
-        oldSize: 0,
-        diff: newAsset.size
-      });
+      added.push(Object.assign({ name }, createDiff(0, newAsset.size)));
     }
   });
 
@@ -75,11 +70,7 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
     bigger: bigger.sort(diffDesc),
     smaller: smaller.sort(diffDesc),
     sameSize,
-    total: {
-      newSize: newSizeTotal,
-      oldSize: oldSizeTotal,
-      diff: newSizeTotal - oldSizeTotal
-    }
+    total: createDiff(oldSizeTotal, newSizeTotal)
   };
 };
 
