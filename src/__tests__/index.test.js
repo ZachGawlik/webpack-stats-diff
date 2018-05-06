@@ -176,14 +176,14 @@ test('Marks an asset as sameSize if changed by a minor percentage', () => {
   const oldAssets = [
     { name: 'big-file-small-change', size: 100000 },
     { name: 'big-file-big-change', size: 100000 },
-    { name: 'small-file-small-change', size: 100 },
-    { name: 'small-file-big-change', size: 100 }
+    { name: 'small-file-small-change', size: 1000 },
+    { name: 'small-file-big-change', size: 1000 }
   ];
   const newAssets = [
     { name: 'big-file-small-change', size: 104000 },
     { name: 'big-file-big-change', size: 105000 },
-    { name: 'small-file-small-change', size: 96 },
-    { name: 'small-file-big-change', size: 95 }
+    { name: 'small-file-small-change', size: 960 },
+    { name: 'small-file-big-change', size: 950 }
   ];
   const results = webpackStatsDiff(oldAssets, newAssets);
   expect(results.bigger).toMatchObject([{ name: 'big-file-big-change' }]);

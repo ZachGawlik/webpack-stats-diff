@@ -50,7 +50,7 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
       );
       if (diff.diffPercentage >= DIFF_THRESHOLD) {
         bigger.push(diff);
-      } else if (diff.diff <= -1 * DIFF_THRESHOLD) {
+      } else if (diff.diffPercentage <= -1 * DIFF_THRESHOLD) {
         smaller.push(diff);
       } else {
         sameSize.push(diff);
