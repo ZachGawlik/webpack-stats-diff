@@ -89,7 +89,7 @@ const printTotalTable = total => {
     diffColor(`${total.diffPercentage} %`)
   ]);
 
-  console.log(table(totalData));
+  console.log(table(totalData, { columnDefault: { alignment: 'right' } }));
 };
 
 const formatExtensions = extensions =>
