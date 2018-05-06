@@ -3,8 +3,30 @@
 const program = require('commander');
 const path = require('path');
 const fs = require('fs');
+const { table, getBorderCharacters } = require('table');
 const chalk = require('chalk');
 const webpackStatsDiff = require('./');
+
+const ASSET_TABLE_CONFIG = {
+  border: getBorderCharacters('void'),
+  columnDefault: {
+    alignment: 'right',
+    paddingLeft: 2,
+    paddingRight: 2
+  },
+  columns: {
+    0: { alignment: 'left' }
+  },
+  drawHorizontalLine: () => false
+};
+
+const TABLE_HEADERS = [
+  chalk.bold('Asset'),
+  chalk.bold('Old size'),
+  chalk.bold('New size'),
+  chalk.bold('Diff'),
+  chalk.bold('Diff %')
+];
 
 const printError = text => {
   console.error(chalk.red(text));
@@ -19,7 +41,7 @@ const checkPathExists = p => {
 
 const getSizeText = size => {
   if (size === 0) {
-    return '0 bytes';
+    return '0';
   }
 
   const abbreviations = ['bytes', 'KiB', 'MiB', 'GiB'];
@@ -30,9 +52,49 @@ const getSizeText = size => {
   }`;
 };
 
+const printAssetsTables = results => {
+  ['added', 'removed', 'bigger', 'smaller'].forEach(field => {
+    const assets = results[field];
+    if (assets.length > 0) {
+      const sectionStyling = ['added', 'bigger'].includes(field)
+        ? chalk.green.bold
+        : chalk.red.bold;
+      console.log(sectionStyling(field));
+
+      const tableData = [
+        TABLE_HEADERS,
+        ...assets.map(asset => [
+          asset.name,
+          getSizeText(asset.oldSize),
+          getSizeText(asset.newSize),
+          getSizeText(asset.diff),
+          `${asset.diffPercentage} %`
+        ])
+      ];
+      console.log(table(tableData, ASSET_TABLE_CONFIG));
+    }
+  });
+};
+
+const printTotalTable = total => {
+  const totalData = [];
+  totalData.push(['', ...TABLE_HEADERS.slice(1)]);
+  const diffColor = total.diff > 0 ? chalk.green.bold : chalk.red.bold;
+
+  totalData.push([
+    total.name,
+    getSizeText(total.oldSize),
+    getSizeText(total.newSize),
+    diffColor(getSizeText(total.diff)),
+    diffColor(`${total.diffPercentage} %`)
+  ]);
+
+  console.log(table(totalData));
+};
+
 program
   .arguments('<old-stats.json> <new-stats.json>')
-  .action(function(oldStats, newStats) {
+  .action((oldStats, newStats) => {
     const oldPath = path.resolve(process.cwd(), oldStats);
     const newPath = path.resolve(process.cwd(), newStats);
 
@@ -43,21 +105,7 @@ program
     const newAssets = require(newPath).assets;
 
     const results = webpackStatsDiff(oldAssets, newAssets);
-
-    ['added', 'removed', 'bigger', 'smaller'].forEach(field => {
-      const assets = results[field];
-      if (assets.length > 0) {
-        console.log(chalk.bold(field));
-        assets.forEach(asset => {
-          console.log(`${asset.name}  ${getSizeText(asset.diff)}`);
-        });
-        console.log('');
-      }
-    });
-
-    console.log(chalk.bold('total'));
-    console.log(`Old:  ${getSizeText(results.total.oldSize)}`);
-    console.log(`New:  ${getSizeText(results.total.newSize)}`);
-    console.log(`Diff: ${getSizeText(results.total.diff)}`);
+    printAssetsTables(results);
+    printTotalTable(results.total);
   })
   .parse(process.argv);

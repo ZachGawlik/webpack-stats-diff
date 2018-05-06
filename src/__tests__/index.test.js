@@ -8,6 +8,7 @@ test('handles blank inputs', () => {
     smaller: [],
     sameSize: [],
     total: {
+      name: 'Total',
       newSize: 0,
       oldSize: 0,
       diff: 0,
@@ -85,6 +86,7 @@ test('reports stat diffs between old and new assets', () => {
       }
     ],
     total: {
+      name: 'Total',
       newSize: 1492880,
       oldSize: 1341356,
       diff: 151524,
@@ -151,6 +153,7 @@ test('filters assets by ext config', () => {
       }
     ],
     total: {
+      name: 'Total',
       newSize: 113536,
       oldSize: 118768,
       diff: -5232,

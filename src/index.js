@@ -72,7 +72,10 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
     bigger: bigger.sort(diffDesc),
     smaller: smaller.sort(diffDesc),
     sameSize,
-    total: createDiff(oldSizeTotal, newSizeTotal)
+    total: Object.assign(
+      { name: 'Total' },
+      createDiff(oldSizeTotal, newSizeTotal)
+    )
   };
 };
 
