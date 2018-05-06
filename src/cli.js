@@ -92,9 +92,20 @@ const printTotalTable = total => {
   console.log(table(totalData));
 };
 
+const formatExtensions = extensions =>
+  extensions.split(',').map(ext => (ext[0] === '.' ? ext : `.${ext}`));
+
 program
   .arguments('<old-stats.json> <new-stats.json>')
+  .option(
+    '-e, --extensions <ext>',
+    'Filter assets by extension. Comma separate.'
+  )
   .action((oldStats, newStats) => {
+    const config = {};
+    if (program.extensions) {
+      config.extensions = formatExtensions(program.extensions);
+    }
     const oldPath = path.resolve(process.cwd(), oldStats);
     const newPath = path.resolve(process.cwd(), newStats);
 
@@ -104,7 +115,7 @@ program
     const oldAssets = require(oldPath).assets;
     const newAssets = require(newPath).assets;
 
-    const results = webpackStatsDiff(oldAssets, newAssets);
+    const results = webpackStatsDiff(oldAssets, newAssets, config);
     printAssetsTables(results);
     printTotalTable(results.total);
   })
