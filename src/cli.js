@@ -119,4 +119,15 @@ program
     printAssetsTables(results);
     printTotalTable(results.total);
   })
+  .on('--help', () => {
+    console.log();
+    console.log('  Examples:');
+    console.log(
+      '    $ webpack-stats-diff master-stats.json stats.json --extensions js,jsx'
+    );
+  })
   .parse(process.argv);
+
+if (!program.args.length) {
+  program.help();
+}
