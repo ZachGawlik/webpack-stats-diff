@@ -52,14 +52,16 @@ const getSizeText = size => {
   }`;
 };
 
+const capitalize = text => text[0].toUpperCase() + text.slice(1);
+
 const printAssetsTables = results => {
   ['added', 'removed', 'bigger', 'smaller'].forEach(field => {
     const assets = results[field];
     if (assets.length > 0) {
-      const sectionStyling = ['added', 'bigger'].includes(field)
-        ? chalk.green.bold
-        : chalk.red.bold;
-      console.log(sectionStyling(field));
+      const sectionColor = ['added', 'bigger'].includes(field)
+        ? chalk.green.underline.bold
+        : chalk.red.underline.bold;
+      console.log(sectionColor(capitalize(field)));
 
       const tableData = [
         TABLE_HEADERS,
