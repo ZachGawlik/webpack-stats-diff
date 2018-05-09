@@ -63,17 +63,25 @@ const printAssetsTables = results => {
         : chalk.red.underline.bold;
       console.log(sectionColor(capitalize(field)));
 
-      const tableData = [
-        TABLE_HEADERS,
-        ...assets.map(asset => [
-          asset.name,
-          getSizeText(asset.oldSize),
-          getSizeText(asset.newSize),
-          getSizeText(asset.diff),
-          `${asset.diffPercentage} %`
-        ])
-      ];
-      console.log(table(tableData, ASSET_TABLE_CONFIG));
+      if (['added', 'removed'].includes(field)) {
+        const tableData = [
+          [chalk.bold('Asset'), chalk.bold('Diff')],
+          ...assets.map(asset => [asset.name, getSizeText(asset.diff)])
+        ];
+        console.log(table(tableData, ASSET_TABLE_CONFIG));
+      } else {
+        const tableData = [
+          TABLE_HEADERS,
+          ...assets.map(asset => [
+            asset.name,
+            getSizeText(asset.oldSize),
+            getSizeText(asset.newSize),
+            getSizeText(asset.diff),
+            `${asset.diffPercentage} %`
+          ])
+        ];
+        console.log(table(tableData, ASSET_TABLE_CONFIG));
+      }
     }
   });
 };
