@@ -111,10 +111,18 @@ program
     '-e, --extensions <ext>',
     'Filter assets by extension. Comma separate.'
   )
+  .option(
+    '-t, --threshold <int>',
+    'minimum % size change to report. Default 5.',
+    parseInt
+  )
   .action((oldStats, newStats) => {
     const config = {};
     if (program.extensions) {
       config.extensions = formatExtensions(program.extensions);
+    }
+    if (Number.isInteger(program.threshold)) {
+      config.threshold = program.threshold;
     }
     const oldPath = path.resolve(process.cwd(), oldStats);
     const newPath = path.resolve(process.cwd(), newStats);

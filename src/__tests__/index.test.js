@@ -64,26 +64,60 @@ test('Sorts by greatest size differences first', () => {
   ]);
 });
 
-test('Marks an asset as sameSize if changed by a minor percentage', () => {
+describe('Marks an asset as sameSize if % change is below threshold', () => {
   const oldAssets = [
     { name: 'big-file-small-change', size: 100000 },
-    { name: 'big-file-big-change', size: 100000 },
+    { name: 'big-file-biggest-change', size: 100000 },
+    { name: 'big-file-no-change', size: 100000 },
     { name: 'small-file-small-change', size: 1000 },
     { name: 'small-file-big-change', size: 1000 }
   ];
   const newAssets = [
     { name: 'big-file-small-change', size: 104000 },
-    { name: 'big-file-big-change', size: 105000 },
+    { name: 'big-file-biggest-change', size: 110001 },
+    { name: 'big-file-no-change', size: 100000 },
     { name: 'small-file-small-change', size: 960 },
-    { name: 'small-file-big-change', size: 950 }
+    { name: 'small-file-big-change', size: 949 }
   ];
-  const results = webpackStatsDiff(oldAssets, newAssets);
-  expect(results).toMatchObject({
-    bigger: [{ name: 'big-file-big-change' }],
-    smaller: [{ name: 'small-file-big-change' }],
-    sameSize: [
-      { name: 'big-file-small-change' },
-      { name: 'small-file-small-change' }
-    ]
+
+  test('Default threshold is 5%', () => {
+    expect(webpackStatsDiff(oldAssets, newAssets)).toMatchObject({
+      bigger: [{ name: 'big-file-biggest-change' }],
+      smaller: [{ name: 'small-file-big-change' }],
+      sameSize: [
+        { name: 'big-file-small-change' },
+        { name: 'big-file-no-change' },
+        { name: 'small-file-small-change' }
+      ]
+    });
+  });
+
+  test('Threshold can be adjusted by configuration', () => {
+    expect(
+      webpackStatsDiff(oldAssets, newAssets, { threshold: 0 })
+    ).toMatchObject({
+      bigger: [
+        { name: 'big-file-biggest-change' },
+        { name: 'big-file-small-change' }
+      ],
+      smaller: [
+        { name: 'small-file-big-change' },
+        { name: 'small-file-small-change' }
+      ],
+      sameSize: [{ name: 'big-file-no-change' }]
+    });
+
+    expect(
+      webpackStatsDiff(oldAssets, newAssets, { threshold: 10 })
+    ).toMatchObject({
+      bigger: [{ name: 'big-file-biggest-change' }],
+      smaller: [],
+      sameSize: [
+        { name: 'big-file-small-change' },
+        { name: 'big-file-no-change' },
+        { name: 'small-file-small-change' },
+        { name: 'small-file-big-change' }
+      ]
+    });
   });
 });

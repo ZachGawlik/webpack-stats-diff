@@ -23,7 +23,7 @@ const createDiff = (oldSize, newSize) => ({
   newSize,
   oldSize,
   diff: newSize - oldSize,
-  diffPercentage: +((1 - newSize / oldSize) * -100).toFixed(2) || 0
+  diffPercentage: +((1 - newSize / oldSize) * -100).toFixed(5) || 0
 });
 
 const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
@@ -48,9 +48,12 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
         { name },
         createDiff(oldAsset.size, newAssetsByName[name].size)
       );
-      if (diff.diffPercentage >= DIFF_THRESHOLD) {
+      const diffThreshold = config.hasOwnProperty('threshold')
+        ? config.threshold
+        : DIFF_THRESHOLD;
+      if (diff.diffPercentage > diffThreshold) {
         bigger.push(diff);
-      } else if (diff.diffPercentage <= -1 * DIFF_THRESHOLD) {
+      } else if (diff.diffPercentage < -1 * diffThreshold) {
         smaller.push(diff);
       } else {
         sameSize.push(diff);

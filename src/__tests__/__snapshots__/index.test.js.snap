@@ -58,14 +58,14 @@ Object {
   "smaller": Array [
     Object {
       "diff": -30000,
-      "diffPercentage": -44.12,
+      "diffPercentage": -44.11765,
       "name": "main-site.js",
       "newSize": 38000,
       "oldSize": 68000,
     },
     Object {
       "diff": -27655,
-      "diffPercentage": -69.14,
+      "diffPercentage": -69.1375,
       "name": "other-page.js",
       "newSize": 12345,
       "oldSize": 40000,
@@ -73,7 +73,7 @@ Object {
   ],
   "total": Object {
     "diff": 151524,
-    "diffPercentage": 11.3,
+    "diffPercentage": 11.29633,
     "name": "Total",
     "newSize": 1492880,
     "oldSize": 1341356,
