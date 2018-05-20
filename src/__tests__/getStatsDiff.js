@@ -1,7 +1,7 @@
-const webpackStatsDiff = require('../index');
+const { getStatsDiff } = require('../index');
 
 test('handles blank inputs', () => {
-  expect(webpackStatsDiff([], [])).toMatchSnapshot();
+  expect(getStatsDiff([], [])).toMatchSnapshot();
 });
 
 test('reports stat diffs between old and new assets', () => {
@@ -19,7 +19,7 @@ test('reports stat diffs between old and new assets', () => {
     { name: 'main-site.js', size: 38000 },
     { name: 'other-page.js', size: 12345 }
   ];
-  expect(webpackStatsDiff(oldAssets, newAssets)).toMatchSnapshot();
+  expect(getStatsDiff(oldAssets, newAssets)).toMatchSnapshot();
 });
 
 test('filters assets by ext config', () => {
@@ -40,7 +40,7 @@ test('filters assets by ext config', () => {
   ];
 
   expect(
-    webpackStatsDiff(oldAssets, newAssets, { extensions: ['.js', '.css'] })
+    getStatsDiff(oldAssets, newAssets, { extensions: ['.js', '.css'] })
   ).toMatchObject({
     added: [],
     removed: [{ name: 'old-page.js' }],
@@ -57,7 +57,7 @@ test('Sorts by greatest size differences first', () => {
     { name: 'new-page.js', size: 8000 },
     { name: 'main-site.js', size: 38000 }
   ];
-  expect(webpackStatsDiff([], newAssets).added).toMatchObject([
+  expect(getStatsDiff([], newAssets).added).toMatchObject([
     { name: 'commons.js' },
     { name: 'main-site.js' },
     { name: 'new-page.js' }
@@ -81,7 +81,7 @@ describe('Marks an asset as sameSize if % change is below threshold', () => {
   ];
 
   test('Default threshold is 5%', () => {
-    expect(webpackStatsDiff(oldAssets, newAssets)).toMatchObject({
+    expect(getStatsDiff(oldAssets, newAssets)).toMatchObject({
       bigger: [{ name: 'big-file-biggest-change' }],
       smaller: [{ name: 'small-file-big-change' }],
       sameSize: [
@@ -93,9 +93,7 @@ describe('Marks an asset as sameSize if % change is below threshold', () => {
   });
 
   test('Threshold can be adjusted by configuration', () => {
-    expect(
-      webpackStatsDiff(oldAssets, newAssets, { threshold: 0 })
-    ).toMatchObject({
+    expect(getStatsDiff(oldAssets, newAssets, { threshold: 0 })).toMatchObject({
       bigger: [
         { name: 'big-file-biggest-change' },
         { name: 'big-file-small-change' }
@@ -107,17 +105,17 @@ describe('Marks an asset as sameSize if % change is below threshold', () => {
       sameSize: [{ name: 'big-file-no-change' }]
     });
 
-    expect(
-      webpackStatsDiff(oldAssets, newAssets, { threshold: 10 })
-    ).toMatchObject({
-      bigger: [{ name: 'big-file-biggest-change' }],
-      smaller: [],
-      sameSize: [
-        { name: 'big-file-small-change' },
-        { name: 'big-file-no-change' },
-        { name: 'small-file-small-change' },
-        { name: 'small-file-big-change' }
-      ]
-    });
+    expect(getStatsDiff(oldAssets, newAssets, { threshold: 10 })).toMatchObject(
+      {
+        bigger: [{ name: 'big-file-biggest-change' }],
+        smaller: [],
+        sameSize: [
+          { name: 'big-file-small-change' },
+          { name: 'big-file-no-change' },
+          { name: 'small-file-small-change' },
+          { name: 'small-file-big-change' }
+        ]
+      }
+    );
   });
 });
