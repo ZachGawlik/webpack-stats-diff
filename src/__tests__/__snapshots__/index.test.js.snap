@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`handles blank inputs 1`] = `
+Object {
+  "added": Array [],
+  "bigger": Array [],
+  "removed": Array [],
+  "sameSize": Array [],
+  "smaller": Array [],
+  "total": Object {
+    "diff": 0,
+    "diffPercentage": 0,
+    "name": "Total",
+    "newSize": 0,
+    "oldSize": 0,
+  },
+}
+`;
+
+exports[`reports stat diffs between old and new assets 1`] = `
+Object {
+  "added": Array [
+    Object {
+      "diff": 176999,
+      "diffPercentage": Infinity,
+      "name": "Roboto-Regular.ttf",
+      "newSize": 176999,
+      "oldSize": 0,
+    },
+  ],
+  "bigger": Array [
+    Object {
+      "diff": 32768,
+      "diffPercentage": 100,
+      "name": "commons.js",
+      "newSize": 65536,
+      "oldSize": 32768,
+    },
+  ],
+  "removed": Array [
+    Object {
+      "diff": -588,
+      "diffPercentage": -100,
+      "name": "logo.svg",
+      "newSize": 0,
+      "oldSize": 588,
+    },
+  ],
+  "sameSize": Array [
+    Object {
+      "diff": 0,
+      "diffPercentage": 0,
+      "name": "me.jpg",
+      "newSize": 1200000,
+      "oldSize": 1200000,
+    },
+  ],
+  "smaller": Array [
+    Object {
+      "diff": -30000,
+      "diffPercentage": -44.12,
+      "name": "main-site.js",
+      "newSize": 38000,
+      "oldSize": 68000,
+    },
+    Object {
+      "diff": -27655,
+      "diffPercentage": -69.14,
+      "name": "other-page.js",
+      "newSize": 12345,
+      "oldSize": 40000,
+    },
+  ],
+  "total": Object {
+    "diff": 151524,
+    "diffPercentage": 11.3,
+    "name": "Total",
+    "newSize": 1492880,
+    "oldSize": 1341356,
+  },
+}
+`;

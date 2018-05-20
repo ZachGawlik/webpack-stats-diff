@@ -1,20 +1,7 @@
 const webpackStatsDiff = require('../index');
 
 test('handles blank inputs', () => {
-  expect(webpackStatsDiff([], [])).toEqual({
-    added: [],
-    removed: [],
-    bigger: [],
-    smaller: [],
-    sameSize: [],
-    total: {
-      name: 'Total',
-      newSize: 0,
-      oldSize: 0,
-      diff: 0,
-      diffPercentage: 0
-    }
-  });
+  expect(webpackStatsDiff([], [])).toMatchSnapshot();
 });
 
 test('reports stat diffs between old and new assets', () => {
@@ -32,67 +19,7 @@ test('reports stat diffs between old and new assets', () => {
     { name: 'main-site.js', size: 38000 },
     { name: 'other-page.js', size: 12345 }
   ];
-  expect(webpackStatsDiff(oldAssets, newAssets)).toEqual({
-    added: [
-      {
-        name: 'Roboto-Regular.ttf',
-        newSize: 176999,
-        oldSize: 0,
-        diff: 176999,
-        diffPercentage: Infinity
-      }
-    ],
-    removed: [
-      {
-        name: 'logo.svg',
-        newSize: 0,
-        oldSize: 588,
-        diff: -588,
-        diffPercentage: -100
-      }
-    ],
-    bigger: [
-      {
-        name: 'commons.js',
-        newSize: 65536,
-        oldSize: 32768,
-        diff: 32768,
-        diffPercentage: 100
-      }
-    ],
-    smaller: [
-      {
-        name: 'main-site.js',
-        newSize: 38000,
-        oldSize: 68000,
-        diff: -30000,
-        diffPercentage: -44.12
-      },
-      {
-        name: 'other-page.js',
-        newSize: 12345,
-        oldSize: 40000,
-        diff: -27655,
-        diffPercentage: -69.14
-      }
-    ],
-    sameSize: [
-      {
-        name: 'me.jpg',
-        newSize: 1200000,
-        oldSize: 1200000,
-        diff: 0,
-        diffPercentage: 0
-      }
-    ],
-    total: {
-      name: 'Total',
-      newSize: 1492880,
-      oldSize: 1341356,
-      diff: 151524,
-      diffPercentage: 11.3
-    }
-  });
+  expect(webpackStatsDiff(oldAssets, newAssets)).toMatchSnapshot();
 });
 
 test('filters assets by ext config', () => {
@@ -114,51 +41,13 @@ test('filters assets by ext config', () => {
 
   expect(
     webpackStatsDiff(oldAssets, newAssets, { extensions: ['.js', '.css'] })
-  ).toEqual({
+  ).toMatchObject({
     added: [],
-    removed: [
-      {
-        name: 'old-page.js',
-        newSize: 0,
-        oldSize: 8000,
-        diff: -8000,
-        diffPercentage: -100
-      }
-    ],
-    bigger: [
-      {
-        name: 'commons.js',
-        newSize: 65536,
-        oldSize: 32768,
-        diff: 32768,
-        diffPercentage: 100
-      }
-    ],
-    smaller: [
-      {
-        name: 'main-site.js',
-        newSize: 38000,
-        oldSize: 68000,
-        diff: -30000,
-        diffPercentage: -44.12
-      }
-    ],
-    sameSize: [
-      {
-        name: 'styles.css',
-        newSize: 10000,
-        oldSize: 10000,
-        diff: 0,
-        diffPercentage: 0
-      }
-    ],
-    total: {
-      name: 'Total',
-      newSize: 113536,
-      oldSize: 118768,
-      diff: -5232,
-      diffPercentage: -4.41
-    }
+    removed: [{ name: 'old-page.js' }],
+    bigger: [{ name: 'commons.js' }],
+    smaller: [{ name: 'main-site.js' }],
+    sameSize: [{ name: 'styles.css' }],
+    total: { name: 'Total' }
   });
 });
 
@@ -189,10 +78,12 @@ test('Marks an asset as sameSize if changed by a minor percentage', () => {
     { name: 'small-file-big-change', size: 950 }
   ];
   const results = webpackStatsDiff(oldAssets, newAssets);
-  expect(results.bigger).toMatchObject([{ name: 'big-file-big-change' }]);
-  expect(results.smaller).toMatchObject([{ name: 'small-file-big-change' }]);
-  expect(results.sameSize).toMatchObject([
-    { name: 'big-file-small-change' },
-    { name: 'small-file-small-change' }
-  ]);
+  expect(results).toMatchObject({
+    bigger: [{ name: 'big-file-big-change' }],
+    smaller: [{ name: 'small-file-big-change' }],
+    sameSize: [
+      { name: 'big-file-small-change' },
+      { name: 'small-file-small-change' }
+    ]
+  });
 });
