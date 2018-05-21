@@ -48,9 +48,10 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
         { name },
         createDiff(oldAsset.size, newAssetsByName[name].size)
       );
-      const diffThreshold = config.hasOwnProperty('threshold')
-        ? config.threshold
-        : DIFF_THRESHOLD;
+      const diffThreshold =
+        typeof config.threshold === 'number' && config.threshold >= 0
+          ? config.threshold
+          : DIFF_THRESHOLD;
       if (diff.diffPercentage > diffThreshold) {
         bigger.push(diff);
       } else if (diff.diffPercentage < -1 * diffThreshold) {
