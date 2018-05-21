@@ -61,7 +61,7 @@ const printAssetsTables = results => {
             getSizeText(asset.oldSize),
             getSizeText(asset.newSize),
             getSizeText(asset.diff),
-            `${asset.diffPercentage} %`
+            `${asset.diffPercentage.toFixed(2)} %`
           ])
         ];
         console.log(table(tableData, ASSET_TABLE_CONFIG));
@@ -80,7 +80,7 @@ const printTotalTable = total => {
     getSizeText(total.oldSize),
     getSizeText(total.newSize),
     diffColor(getSizeText(total.diff)),
-    diffColor(`${total.diffPercentage} %`)
+    diffColor(`${total.diffPercentage.toFixed(2)} %`)
   ]);
 
   console.log(table(totalData, { columnDefault: { alignment: 'right' } }));
