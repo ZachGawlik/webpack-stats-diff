@@ -22,6 +22,38 @@ test('reports stat diffs between old and new assets', () => {
   expect(getStatsDiff(oldAssets, newAssets)).toMatchSnapshot();
 });
 
+test('Matches bundles by name (string before first period) and ext', () => {
+  const oldAssets = [
+    { name: 'main.a83fjads83ja.js', size: 32768 },
+    { name: 'main.23r8f2398sdz.css', size: 4000 },
+    { name: 'form.i8aejf3iad.chunk.js', size: 5000 },
+    { name: 'form.aefc83zl9a.css', size: 2000 }
+  ];
+  const newAssets = [
+    { name: 'main.aweifa09eh3.js', size: 16384 },
+    { name: 'main.jo821kjdsi9.css', size: 5000 },
+    { name: 'form.awe9f3nads893oz.chunk.js', size: 6500 },
+    { name: 'form.89aw3jiuawefh8d.css', size: 1500 }
+  ];
+  expect(getStatsDiff(oldAssets, newAssets)).toMatchObject({
+    added: [],
+    removed: [],
+    bigger: [
+      { name: 'form.js', oldSize: 5000, newSize: 6500 },
+      { name: 'main.css', oldSize: 4000, newSize: 5000 }
+    ],
+    smaller: [
+      {
+        name: 'main.js',
+        oldSize: 32768,
+        newSize: 16384
+      },
+      { name: 'form.css', oldSize: 2000, newSize: 1500 }
+    ],
+    sameSize: []
+  });
+});
+
 test('filters assets by ext config', () => {
   const oldAssets = [
     { name: 'commons.js', size: 32768 },
@@ -66,28 +98,28 @@ test('Sorts by greatest size differences first', () => {
 
 describe('Marks an asset as sameSize if % change is below threshold', () => {
   const oldAssets = [
-    { name: 'big-file-small-change', size: 100000 },
-    { name: 'big-file-biggest-change', size: 100000 },
-    { name: 'big-file-no-change', size: 100000 },
-    { name: 'small-file-small-change', size: 1000 },
-    { name: 'small-file-big-change', size: 1000 }
+    { name: 'big-file-small-change.js', size: 100000 },
+    { name: 'big-file-biggest-change.js', size: 100000 },
+    { name: 'big-file-no-change.js', size: 100000 },
+    { name: 'small-file-small-change.js', size: 1000 },
+    { name: 'small-file-big-change.js', size: 1000 }
   ];
   const newAssets = [
-    { name: 'big-file-small-change', size: 104000 },
-    { name: 'big-file-biggest-change', size: 110001 },
-    { name: 'big-file-no-change', size: 100000 },
-    { name: 'small-file-small-change', size: 960 },
-    { name: 'small-file-big-change', size: 949 }
+    { name: 'big-file-small-change.js', size: 104000 },
+    { name: 'big-file-biggest-change.js', size: 110001 },
+    { name: 'big-file-no-change.js', size: 100000 },
+    { name: 'small-file-small-change.js', size: 960 },
+    { name: 'small-file-big-change.js', size: 949 }
   ];
 
   test('Default threshold is 5%', () => {
     expect(getStatsDiff(oldAssets, newAssets)).toMatchObject({
-      bigger: [{ name: 'big-file-biggest-change' }],
-      smaller: [{ name: 'small-file-big-change' }],
+      bigger: [{ name: 'big-file-biggest-change.js' }],
+      smaller: [{ name: 'small-file-big-change.js' }],
       sameSize: [
-        { name: 'big-file-small-change' },
-        { name: 'big-file-no-change' },
-        { name: 'small-file-small-change' }
+        { name: 'big-file-small-change.js' },
+        { name: 'big-file-no-change.js' },
+        { name: 'small-file-small-change.js' }
       ]
     });
   });
@@ -95,25 +127,25 @@ describe('Marks an asset as sameSize if % change is below threshold', () => {
   test('Threshold can be adjusted by configuration', () => {
     expect(getStatsDiff(oldAssets, newAssets, { threshold: 0 })).toMatchObject({
       bigger: [
-        { name: 'big-file-biggest-change' },
-        { name: 'big-file-small-change' }
+        { name: 'big-file-biggest-change.js' },
+        { name: 'big-file-small-change.js' }
       ],
       smaller: [
-        { name: 'small-file-big-change' },
-        { name: 'small-file-small-change' }
+        { name: 'small-file-big-change.js' },
+        { name: 'small-file-small-change.js' }
       ],
-      sameSize: [{ name: 'big-file-no-change' }]
+      sameSize: [{ name: 'big-file-no-change.js' }]
     });
 
     expect(getStatsDiff(oldAssets, newAssets, { threshold: 10 })).toMatchObject(
       {
-        bigger: [{ name: 'big-file-biggest-change' }],
+        bigger: [{ name: 'big-file-biggest-change.js' }],
         smaller: [],
         sameSize: [
-          { name: 'big-file-small-change' },
-          { name: 'big-file-no-change' },
-          { name: 'small-file-small-change' },
-          { name: 'small-file-big-change' }
+          { name: 'big-file-small-change.js' },
+          { name: 'big-file-no-change.js' },
+          { name: 'small-file-small-change.js' },
+          { name: 'small-file-big-change.js' }
         ]
       }
     );

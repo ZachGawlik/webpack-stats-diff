@@ -10,11 +10,17 @@ const filterByExtension = (assets, config) => {
     : assets;
 };
 
+const removeHash = filename => {
+  const fileParts = filename.split('.');
+  return `${fileParts[0]}.${fileParts[fileParts.length - 1]}`;
+};
+
 const indexByName = assets => {
-  return assets.reduce((assetsByName, asset) => {
-    assetsByName[asset.name] = asset;
-    return assetsByName;
-  }, {});
+  const assetsByName = {};
+  assets.forEach(asset => {
+    assetsByName[removeHash(asset.name)] = asset;
+  });
+  return assetsByName;
 };
 
 const diffDesc = (diff1, diff2) => Math.abs(diff2.diff) - Math.abs(diff1.diff);
@@ -65,7 +71,7 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
   Object.keys(newAssetsByName).forEach(name => {
     const newAsset = newAssetsByName[name];
     newSizeTotal += newAsset.size;
-    if (!oldAssetsByName[newAsset.name]) {
+    if (!oldAssetsByName[name]) {
       added.push(Object.assign({ name }, createDiff(0, newAsset.size)));
     }
   });
