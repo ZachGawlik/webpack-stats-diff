@@ -2,15 +2,26 @@ const path = require('path');
 
 const DIFF_THRESHOLD = 5;
 
-const filterByExtension = (assets, config) => {
-  const extensionsWithDot =
-    Array.isArray(config.extensions) &&
-    config.extensions.map(ext => (ext[0] === '.' ? ext : `.${ext}`));
+const sanitizeExtensions = (extensions = null) => {
+  if (!extensions) {
+    return null;
+  } else if (!Array.isArray(extensions)) {
+    throw new Error('`extensions` must be an array of strings');
+  } else {
+    return extensions.map(ext => (ext[0] === '.' ? ext : `.${ext}`));
+  }
+};
 
-  return extensionsWithDot
-    ? assets.filter(({ name }) =>
-        extensionsWithDot.includes(path.extname(name))
-      )
+const sanitizeThreshold = (threshold = DIFF_THRESHOLD) => {
+  if (typeof threshold !== 'number' || threshold < 0) {
+    throw new Error('`threshold` must be a non-negative number');
+  }
+  return threshold;
+};
+
+const filterByExtension = (assets, extensions) => {
+  return extensions
+    ? assets.filter(({ name }) => extensions.includes(path.extname(name)))
     : assets;
 };
 
@@ -37,8 +48,10 @@ const createDiff = (oldSize, newSize) => ({
 });
 
 const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
-  const oldAssetsByName = indexByName(filterByExtension(oldAssets, config));
-  const newAssetsByName = indexByName(filterByExtension(newAssets, config));
+  const extensions = sanitizeExtensions(config.extensions);
+  const threshold = sanitizeThreshold(config.threshold);
+  const oldAssetsByName = indexByName(filterByExtension(oldAssets, extensions));
+  const newAssetsByName = indexByName(filterByExtension(newAssets, extensions));
 
   const added = [];
   const removed = [];
@@ -58,13 +71,9 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
         { name },
         createDiff(oldAsset.size, newAssetsByName[name].size)
       );
-      const diffThreshold =
-        typeof config.threshold === 'number' && config.threshold >= 0
-          ? config.threshold
-          : DIFF_THRESHOLD;
-      if (diff.diffPercentage > diffThreshold) {
+      if (diff.diffPercentage > threshold) {
         bigger.push(diff);
-      } else if (diff.diffPercentage < -1 * diffThreshold) {
+      } else if (diff.diffPercentage < -1 * threshold) {
         smaller.push(diff);
       } else {
         sameSize.push(diff);
