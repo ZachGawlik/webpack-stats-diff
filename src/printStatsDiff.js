@@ -88,5 +88,10 @@ const printTotalTable = total => {
 
 module.exports = statsDiff => {
   printAssetsTables(statsDiff);
+  if (statsDiff.extensions) {
+    console.log(
+      `For assets with extensions ${statsDiff.extensions.join(', ')}`
+    );
+  }
   printTotalTable(statsDiff.total);
 };
