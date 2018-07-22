@@ -3,9 +3,13 @@ const path = require('path');
 const DIFF_THRESHOLD = 5;
 
 const filterByExtension = (assets, config) => {
-  return config.extensions
+  const extensionsWithDot =
+    Array.isArray(config.extensions) &&
+    config.extensions.map(ext => (ext[0] === '.' ? ext : `.${ext}`));
+
+  return extensionsWithDot
     ? assets.filter(({ name }) =>
-        config.extensions.includes(path.extname(name))
+        extensionsWithDot.includes(path.extname(name))
       )
     : assets;
 };

@@ -17,9 +17,6 @@ const checkPathExists = p => {
   }
 };
 
-const formatExtensions = extensions =>
-  extensions.split(',').map(ext => (ext[0] === '.' ? ext : `.${ext}`));
-
 program
   .arguments('<old-stats.json> <new-stats.json>')
   .option(
@@ -34,7 +31,7 @@ program
   .action((oldStats, newStats) => {
     const config = {};
     if (program.extensions) {
-      config.extensions = formatExtensions(program.extensions);
+      config.extensions = program.extensions.split(',');
     }
     if (Number.isInteger(program.threshold)) {
       config.threshold = program.threshold;
