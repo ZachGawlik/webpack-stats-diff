@@ -72,14 +72,15 @@ test('filters assets by ext config', () => {
   ];
 
   expect(
-    getStatsDiff(oldAssets, newAssets, { extensions: ['.js', '.css'] })
+    getStatsDiff(oldAssets, newAssets, { extensions: ['.js', 'css'] })
   ).toMatchObject({
     added: [],
     removed: [{ name: 'old-page.js' }],
     bigger: [{ name: 'commons.js' }],
     smaller: [{ name: 'main-site.js' }],
     sameSize: [{ name: 'styles.css' }],
-    total: { name: 'Total' }
+    total: { name: 'Total' },
+    extensions: ['.js', '.css']
   });
 });
 
@@ -120,7 +121,8 @@ describe('Marks an asset as sameSize if % change is below threshold', () => {
         { name: 'big-file-small-change.js' },
         { name: 'big-file-no-change.js' },
         { name: 'small-file-small-change.js' }
-      ]
+      ],
+      threshold: 5
     });
   });
 
@@ -134,7 +136,8 @@ describe('Marks an asset as sameSize if % change is below threshold', () => {
         { name: 'small-file-big-change.js' },
         { name: 'small-file-small-change.js' }
       ],
-      sameSize: [{ name: 'big-file-no-change.js' }]
+      sameSize: [{ name: 'big-file-no-change.js' }],
+      threshold: 0
     });
 
     expect(getStatsDiff(oldAssets, newAssets, { threshold: 10 })).toMatchObject(
@@ -146,7 +149,8 @@ describe('Marks an asset as sameSize if % change is below threshold', () => {
           { name: 'big-file-no-change.js' },
           { name: 'small-file-small-change.js' },
           { name: 'small-file-big-change.js' }
-        ]
+        ],
+        threshold: 10
       }
     );
   });

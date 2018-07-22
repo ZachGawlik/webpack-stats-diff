@@ -4,9 +4,11 @@ exports[`handles blank inputs 1`] = `
 Object {
   "added": Array [],
   "bigger": Array [],
+  "extensions": null,
   "removed": Array [],
   "sameSize": Array [],
   "smaller": Array [],
+  "threshold": 5,
   "total": Object {
     "diff": 0,
     "diffPercentage": 0,
@@ -37,6 +39,7 @@ Object {
       "oldSize": 32768,
     },
   ],
+  "extensions": null,
   "removed": Array [
     Object {
       "diff": -588,
@@ -71,6 +74,7 @@ Object {
       "oldSize": 40000,
     },
   ],
+  "threshold": 5,
   "total": Object {
     "diff": 151524,
     "diffPercentage": 11.29633,

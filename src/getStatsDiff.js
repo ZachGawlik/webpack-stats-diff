@@ -98,7 +98,9 @@ const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
     total: Object.assign(
       { name: 'Total' },
       createDiff(oldSizeTotal, newSizeTotal)
-    )
+    ),
+    extensions,
+    threshold
   };
 };
 
