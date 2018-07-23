@@ -2,6 +2,10 @@ const path = require('path');
 
 const DIFF_THRESHOLD = 5;
 
+const requiredAssets = argumentName => {
+  throw new Error(`${argumentName} is required`);
+};
+
 const sanitizeExtensions = (extensions = null) => {
   if (!extensions) {
     return null;
@@ -47,7 +51,11 @@ const createDiff = (oldSize, newSize) => ({
   diffPercentage: +((1 - newSize / oldSize) * -100).toFixed(5) || 0
 });
 
-const webpackStatsDiff = (oldAssets, newAssets, config = {}) => {
+const webpackStatsDiff = (
+  oldAssets = requiredAssets('oldAssets'),
+  newAssets = requiredAssets('newAssets'),
+  config = {}
+) => {
   const extensions = sanitizeExtensions(config.extensions);
   const threshold = sanitizeThreshold(config.threshold);
   const oldAssetsByName = indexByName(filterByExtension(oldAssets, extensions));
