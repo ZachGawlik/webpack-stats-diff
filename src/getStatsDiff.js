@@ -24,9 +24,16 @@ const sanitizeThreshold = (threshold = DIFF_THRESHOLD) => {
 };
 
 const filterByExtension = (assets, extensions) => {
-  return extensions
-    ? assets.filter(({ name }) => extensions.includes(path.extname(name)))
-    : assets;
+  if (!extensions) {
+    return assets;
+  }
+  const filteredAssets = {};
+  Object.keys(assets).forEach(name => {
+    if (extensions.includes(path.extname(name))) {
+      filteredAssets[name] = assets[name];
+    }
+  });
+  return filteredAssets;
 };
 
 const removeHash = filename => {
@@ -34,10 +41,10 @@ const removeHash = filename => {
   return `${fileParts[0]}.${fileParts[fileParts.length - 1]}`;
 };
 
-const indexByName = assets => {
+const indexNameToSize = statAssets => {
   const assetsByName = {};
-  assets.forEach(asset => {
-    assetsByName[removeHash(asset.name)] = asset;
+  statAssets.forEach(asset => {
+    assetsByName[removeHash(asset.name)] = asset.size;
   });
   return assetsByName;
 };
@@ -51,16 +58,38 @@ const createDiff = (oldSize, newSize) => ({
   diffPercentage: +((1 - newSize / oldSize) * -100).toFixed(5) || 0
 });
 
-const webpackStatsDiff = (
+// Note: since this is to be called with sizes from indexNameToSize or
+// react-dev-tool's measureFileSizesBeforeBuild, the filenames will be hash-less
+const getAssetsDiff = (
   oldAssets = requiredAssets('oldAssets'),
   newAssets = requiredAssets('newAssets'),
   config = {}
 ) => {
   const extensions = sanitizeExtensions(config.extensions);
   const threshold = sanitizeThreshold(config.threshold);
-  const oldAssetsByName = indexByName(filterByExtension(oldAssets, extensions));
-  const newAssetsByName = indexByName(filterByExtension(newAssets, extensions));
+  return webpackStatsDiff(
+    filterByExtension(oldAssets, extensions),
+    filterByExtension(newAssets, extensions),
+    {
+      extensions,
+      threshold
+    }
+  );
+};
 
+const getStatsDiff = (
+  oldAssetStats = requiredAssets('oldAssetStats'),
+  newAssetStats = requiredAssets('newAssetStats'),
+  config = {}
+) => {
+  return getAssetsDiff(
+    indexNameToSize(oldAssetStats),
+    indexNameToSize(newAssetStats),
+    config
+  );
+};
+
+const webpackStatsDiff = (oldAssets, newAssets, { extensions, threshold }) => {
   const added = [];
   const removed = [];
   const bigger = [];
@@ -69,15 +98,15 @@ const webpackStatsDiff = (
   let newSizeTotal = 0;
   let oldSizeTotal = 0;
 
-  Object.keys(oldAssetsByName).forEach(name => {
-    const oldAsset = oldAssetsByName[name];
-    oldSizeTotal += oldAsset.size;
-    if (!newAssetsByName[name]) {
-      removed.push(Object.assign({ name }, createDiff(oldAsset.size, 0)));
+  Object.keys(oldAssets).forEach(name => {
+    const oldAssetSize = oldAssets[name];
+    oldSizeTotal += oldAssetSize;
+    if (!newAssets[name]) {
+      removed.push(Object.assign({ name }, createDiff(oldAssetSize, 0)));
     } else {
       const diff = Object.assign(
         { name },
-        createDiff(oldAsset.size, newAssetsByName[name].size)
+        createDiff(oldAssetSize, newAssets[name])
       );
       if (diff.diffPercentage > threshold) {
         bigger.push(diff);
@@ -89,11 +118,11 @@ const webpackStatsDiff = (
     }
   });
 
-  Object.keys(newAssetsByName).forEach(name => {
-    const newAsset = newAssetsByName[name];
-    newSizeTotal += newAsset.size;
-    if (!oldAssetsByName[name]) {
-      added.push(Object.assign({ name }, createDiff(0, newAsset.size)));
+  Object.keys(newAssets).forEach(name => {
+    const newAssetSize = newAssets[name];
+    newSizeTotal += newAssetSize;
+    if (!oldAssets[name]) {
+      added.push(Object.assign({ name }, createDiff(0, newAssetSize)));
     }
   });
 
@@ -112,4 +141,7 @@ const webpackStatsDiff = (
   };
 };
 
-module.exports = webpackStatsDiff;
+module.exports = {
+  getAssetsDiff,
+  getStatsDiff
+};
